@@ -1,0 +1,15 @@
+{
+  "name": "crud-expressjs-memoria",
+  "version": "1.0.0",
+  "description": "Este é um exemplo de aplicativo CRUD (Create, Read, Update, Delete) usando o framework Express.js e um banco de dados em memória.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
