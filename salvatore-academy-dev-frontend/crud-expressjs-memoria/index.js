@@ -36,17 +36,48 @@ app.post('/personagem', (req, res) => {
     // Receber os dados do novo personagem
     const personagem = req.body;
 
+    // Gerar um novo id para o personagem
+    const id = lista[lista.length - 1].id + 1;
+    personagem.id = id;
+
+    // validar os dados e não permitir personagens duplicados pelo nome e id (não pode ser repetido)
+    const item = lista.find(item => item.id == personagem.id || item.nome == personagem.nome);
+    
+    if (item) {
+        res.status(400).send('Personagem já existe');
+        return;
+    }
+
+    // Checar se o personagem tem nome
+    if (!personagem.nome) {
+        res.status(400).send('Nome é obrigatório');
+        return;
+    }
+
     // Adicionar o novo personagem na lista
     lista.push(personagem);
 
     // Retornar o novo personagem
-    res.send('Personagem adicionado com sucesso ' + personagem.nome);
+    res.send('Personagem adicionado com sucesso: ' + personagem.nome);
 });
 
 // Endpoint Update [PUT] /personagem/:id
 app.put('/personagem/:id', (req, res) => {
     // Acessar o id que foi passado na URL  
     const id = req.params.id;
+
+    // Checar se o personagem tem nome
+    if (!req.body.nome) {
+        res.status(400).send('Nome é obrigatório');
+        return;
+    }
+
+    // Checar se o personagem existe
+    const itemExistente = lista.find(item => item.id == id);
+    if (!itemExistente) {
+        res.status(400).send('Personagem não encontrado');
+        return;
+    }
     
     // Buscar o personagem na lista
     const item = lista.find(function(item) {
