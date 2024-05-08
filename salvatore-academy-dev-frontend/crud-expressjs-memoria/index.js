@@ -43,6 +43,24 @@ app.post('/personagem', (req, res) => {
     res.send('Personagem adicionado com sucesso ' + personagem.nome);
 });
 
+// Endpoint Update [PUT] /personagem/:id
+app.put('/personagem/:id', (req, res) => {
+    // Acessar o id que foi passado na URL  
+    const id = req.params.id;
+    
+    // Buscar o personagem na lista
+    const item = lista.find(function(item) {
+         return item.id == id; 
+    });
+
+    // Atualizar o personagem com os dados do body
+    item.nome = req.body.nome;
+
+    // Retornar o personagem atualizado
+    res.send('Personagem atualizado com sucesso: ' + item.id + ' - ' + item.nome);
+});
+
+
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
 });
