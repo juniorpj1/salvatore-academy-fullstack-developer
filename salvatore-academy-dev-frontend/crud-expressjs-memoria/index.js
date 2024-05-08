@@ -44,7 +44,7 @@ app.post('/personagem', (req, res) => {
     const item = lista.find(item => item.id == personagem.id || item.nome == personagem.nome);
     
     if (item) {
-        res.status(400).send('Personagem já existe');
+        res.status(409).send('Personagem já existe');
         return;
     }
 
@@ -57,8 +57,8 @@ app.post('/personagem', (req, res) => {
     // Adicionar o novo personagem na lista
     lista.push(personagem);
 
-    // Retornar o novo personagem
-    res.send('Personagem adicionado com sucesso: ' + personagem.nome);
+    // Retornar o novo personagem e status code de created (201)
+    res.status(201).send(' Personagem adicionado com sucesso: ' + personagem.nome);
 });
 
 // Endpoint Update [PUT] /personagem/:id
@@ -75,7 +75,7 @@ app.put('/personagem/:id', (req, res) => {
     // Checar se o personagem existe
     const itemExistente = lista.find(item => item.id == id);
     if (!itemExistente) {
-        res.status(400).send('Personagem não encontrado');
+        res.status(404).send('Personagem não encontrado');
         return;
     }
     
@@ -95,6 +95,13 @@ app.put('/personagem/:id', (req, res) => {
 app.delete('/personagem/:id', (req, res) => {
     // Acessar o id que foi passado na URL  
     const id = req.params.id;
+
+    // Checar se o personagem existe
+    const itemExistente = lista.find(item => item.id == id);
+    if (!itemExistente) {
+        res.status(404).send('Personagem não encontrado');
+        return;
+    }
     
     // Buscar o personagem na lista
     const index = lista.findIndex(function(item) {
