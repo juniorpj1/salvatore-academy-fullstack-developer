@@ -22,6 +22,13 @@ app.get('/personagem', (req, res) => {
 app.get('/personagem/:id', (req, res) => {
   // Acessar o id que foi passado na URL  
   const id = req.params.id;
+
+  // Checar se o personagem existe
+    const itemExistente = lista.find(item => item.id == id);
+    if (!itemExistente) {
+        res.status(404).send('Personagem não encontrado');
+        return;
+    }
   
   // Buscar o personagem na lista
   const item = lista.find(item => item.id == id);
