@@ -60,6 +60,23 @@ app.put('/personagem/:id', (req, res) => {
     res.send('Personagem atualizado com sucesso: ' + item.id + ' - ' + item.nome);
 });
 
+// Endpoint Delete [DELETE] /personagem/:id
+app.delete('/personagem/:id', (req, res) => {
+    // Acessar o id que foi passado na URL  
+    const id = req.params.id;
+    
+    // Buscar o personagem na lista
+    const index = lista.findIndex(function(item) {
+         return item.id == id; 
+    });
+
+    // Remover o personagem da lista
+    lista.splice(index, 1); // Remove 1 elemento a partir do index
+
+    // Retornar o personagem removido
+    res.send('Personagem removido com sucesso');
+});
+
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
