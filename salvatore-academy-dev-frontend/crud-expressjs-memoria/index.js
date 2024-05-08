@@ -18,7 +18,7 @@ app.get('/personagem', (req, res) => {
    res.send(lista); // o express já transforma uma variável em JSON
 });
 
-// Endpoint Read Single [GET]
+// Endpoint Read Single by ID [GET]
 app.get('/personagem/:id', (req, res) => {
   // Acessar o id que foi passado na URL  
   const id = req.params.id;
@@ -28,6 +28,19 @@ app.get('/personagem/:id', (req, res) => {
 
   // Retornar o personagem encontrado
   res.send(item);
+});
+
+// Endpoint Create [POST] /personagem
+app.use(express.json()); // Middleware para o express entender JSON
+app.post('/personagem', (req, res) => {
+    // Receber os dados do novo personagem
+    const personagem = req.body;
+
+    // Adicionar o novo personagem na lista
+    lista.push(personagem);
+
+    // Retornar o novo personagem
+    res.send('Personagem adicionado com sucesso ' + personagem.nome);
 });
 
 app.listen(port, () => {
