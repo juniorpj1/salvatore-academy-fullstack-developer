@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ObjectId } = require('mongodb');
+const { MongoClient, ObjectId, Collection } = require('mongodb');
 
 // Conexão com o banco de dados
 const uri = 'mongodb://localhost:27017';
@@ -91,33 +91,34 @@ async function main() {
   });
 
   // Endpoint Update [PUT] /personagem/:id
-  app.put('/personagem/:id', (req, res) => {
-    // Acessar o id que foi passado na URL  
+  app.put('/personagem/:id', async (req, res) => {
+    // Checar se o personagem existe
+    //const itemExistente = lista.find(item => item.id == id);
+    //if (!itemExistente) {
+    //  res.status(404).send('Personagem não encontrado');
+    //  return;
+    //}
+
+    // Acessar o body da requisição
+    const novoItem = req.body;
+
+    // Checar se o personagem tem nome ou se o novoItem existe
+    if (!novoItem.nome || !novoItem) {
+      res.status(400).send('Nome e corpo da requisição é obrigatório');
+      return;
+    }
+
+    // Buscar o personagem na collection pelo ID
     const id = req.params.id;
 
-    // Checar se o personagem tem nome
-    if (!req.body.nome) {
-      res.status(400).send('Nome é obrigatório');
-      return;
-    }
-
-    // Checar se o personagem existe
-    const itemExistente = lista.find(item => item.id == id);
-    if (!itemExistente) {
-      res.status(404).send('Personagem não encontrado');
-      return;
-    }
-
-    // Buscar o personagem na lista
-    const item = lista.find(function (item) {
-      return item.id == id;
-    });
-
-    // Atualizar o personagem com os dados do body
-    item.nome = req.body.nome;
+    // Atualizar na collection o novoItem pelo ID
+    await collection.updateOne(
+      { _id: new ObjectId(id)}, 
+      { $set: novoItem }
+    );
 
     // Retornar o personagem atualizado
-    res.send('Personagem atualizado com sucesso: ' + item.id + ' - ' + item.nome);
+    res.send(novoItem);
   });
 
   // Endpoint Delete [DELETE] /personagem/:id
