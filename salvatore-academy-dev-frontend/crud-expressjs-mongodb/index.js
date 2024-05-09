@@ -122,27 +122,21 @@ async function main() {
   });
 
   // Endpoint Delete [DELETE] /personagem/:id
-  app.delete('/personagem/:id', (req, res) => {
+  app.delete('/personagem/:id', async (req, res) => {
     // Acessar o id que foi passado na URL  
     const id = req.params.id;
 
     // Checar se o personagem existe
-    const itemExistente = lista.find(item => item.id == id);
-    if (!itemExistente) {
+    if (id == null || id == undefined) {
       res.status(404).send('Personagem não encontrado');
       return;
     }
 
-    // Buscar o personagem na lista
-    const index = lista.findIndex(function (item) {
-      return item.id == id;
-    });
+    // Remover o personagem da collection pelo ID usando
+    await collection.deleteOne({ _id: new ObjectId(id)});
 
-    // Remover o personagem da lista
-    lista.splice(index, 1); // Remove 1 elemento a partir do index
-
-    // Retornar o personagem removido
-    res.send('Personagem removido com sucesso');
+    // Retornar a mensagem de personagem removido com sucesso
+    res.send('Personagem removido com sucesso' + id);
   });
 
 
