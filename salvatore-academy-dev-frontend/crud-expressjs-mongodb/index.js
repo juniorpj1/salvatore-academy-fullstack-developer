@@ -32,9 +32,17 @@ async function main() {
     { id: 3, nome: 'José' },
   ];
 
-  // Endpoint Read All [GET]
-  app.get('/personagem', (req, res) => {
-    res.send(lista); // o express já transforma uma variável em JSON
+  // Endpoint Read All [GET] /personagem 
+  app.get('/personagem', async (req, res) => {
+    // Buscar todos os personagens
+    const personagens = await collection.find().toArray();
+
+    // Retornar a lista de personagens com try catch
+    try {
+      res.send(personagens);
+    } catch (error) {
+      res.status(500).send('Erro ao buscar personagens');
+    }
   });
 
   // Endpoint Read Single by ID [GET]
