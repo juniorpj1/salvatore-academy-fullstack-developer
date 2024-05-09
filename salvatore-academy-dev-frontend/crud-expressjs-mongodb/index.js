@@ -65,33 +65,29 @@ async function main() {
 
   // Endpoint Create [POST] /personagem
   app.use(express.json()); // Middleware para o express entender JSON
-  app.post('/personagem', (req, res) => {
+  app.post('/personagem', async (req, res) => {
     // Receber os dados do novo personagem
     const personagem = req.body;
-
-    // Gerar um novo id para o personagem
-    const id = lista[lista.length - 1].id + 1;
-    personagem.id = id;
 
     // validar os dados e não permitir personagens duplicados pelo nome e id (não pode ser repetido)
     const item = lista.find(item => item.id == personagem.id || item.nome == personagem.nome);
 
-    if (item) {
-      res.status(409).send('Personagem já existe');
-      return;
-    }
+    //if (item) {
+    //  res.status(409).send('Personagem já existe');
+    //  return;
+    //}
 
     // Checar se o personagem tem nome
-    if (!personagem.nome) {
-      res.status(400).send('Nome é obrigatório');
+    if (!personagem.nome || !personagem) {
+      res.status(400).send('Nome e corpo da requisição é obrigatório');
       return;
     }
 
-    // Adicionar o novo personagem na lista
-    lista.push(personagem);
+    // Adicionar o novo personagem na collection do MongoDB
+    await collection.insertOne(personagem);
 
     // Retornar o novo personagem e status code de created (201)
-    res.status(201).send(' Personagem adicionado com sucesso: ' + personagem.nome);
+    res.status(201).send(personagem);
   });
 
   // Endpoint Update [PUT] /personagem/:id
