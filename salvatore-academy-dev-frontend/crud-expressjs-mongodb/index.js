@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 // Conexão com o banco de dados
 const uri = 'mongodb://localhost:27017';
@@ -46,20 +46,19 @@ async function main() {
   });
 
   // Endpoint Read Single by ID [GET]
-  app.get('/personagem/:id', (req, res) => {
+  app.get('/personagem/:id', async (req, res) => {
     // Acessar o id que foi passado na URL  
     const id = req.params.id;
 
+    // Checar se o personagem existe na collection do MongoDB
+    const item = await collection.findOne({ _id: new ObjectId(id)});
+
     // Checar se o personagem existe
-    const itemExistente = lista.find(item => item.id == id);
-    if (!itemExistente) {
+    if (!item) {
       res.status(404).send('Personagem não encontrado');
       return;
     }
-
-    // Buscar o personagem na lista
-    const item = lista.find(item => item.id == id);
-
+    
     // Retornar o personagem encontrado
     res.send(item);
   });
