@@ -1,45 +1,64 @@
 const express = require('express');
+const { MongoClient } = require('mongodb');
 
-const app = express();
-const port = 3000;
+// Conexão com o banco de dados
+const uri = 'mongodb://localhost:27017';
+const dbName = 'crud-expressjs-mongodb';
 
-app.get('/', (req, res) => {
+// Função para conectar ao banco de dados
+async function main() {
+  // Conectar ao banco de dados
+  const client = new MongoClient(uri);
+  console.log('Conectando ao banco de dados...');
+  await client.connect()
+  console.log('Conectado ao banco de dados');
+
+  // Selecionar o banco de dados
+  const db = client.db(dbName);
+
+  // Selecionar a coleção
+  const collection = db.collection('personagem');
+
+  const app = express();
+  const port = 3000;
+
+  app.get('/', (req, res) => {
     res.send('Hello World!!!!');
-});
+  });
 
-const lista = [
+  const lista = [
     { id: 1, nome: 'João' },
     { id: 2, nome: 'Maria' },
     { id: 3, nome: 'José' },
-];
+  ];
 
-// Endpoint Read All [GET]
-app.get('/personagem', (req, res) => {
-   res.send(lista); // o express já transforma uma variável em JSON
-});
+  // Endpoint Read All [GET]
+  app.get('/personagem', (req, res) => {
+    res.send(lista); // o express já transforma uma variável em JSON
+  });
 
-// Endpoint Read Single by ID [GET]
-app.get('/personagem/:id', (req, res) => {
-  // Acessar o id que foi passado na URL  
-  const id = req.params.id;
+  // Endpoint Read Single by ID [GET]
+  app.get('/personagem/:id', (req, res) => {
+    // Acessar o id que foi passado na URL  
+    const id = req.params.id;
 
-  // Checar se o personagem existe
+    // Checar se o personagem existe
     const itemExistente = lista.find(item => item.id == id);
     if (!itemExistente) {
-        res.status(404).send('Personagem não encontrado');
-        return;
+      res.status(404).send('Personagem não encontrado');
+      return;
     }
-  
-  // Buscar o personagem na lista
-  const item = lista.find(item => item.id == id);
 
-  // Retornar o personagem encontrado
-  res.send(item);
-});
+    // Buscar o personagem na lista
+    const item = lista.find(item => item.id == id);
 
-// Endpoint Create [POST] /personagem
-app.use(express.json()); // Middleware para o express entender JSON
-app.post('/personagem', (req, res) => {
+    // Retornar o personagem encontrado
+    res.send(item);
+  });
+
+  // Endpoint Create [POST] /personagem
+  app.use(express.json()); // Middleware para o express entender JSON
+  app.post('/personagem', (req, res) => {
     // Receber os dados do novo personagem
     const personagem = req.body;
 
@@ -49,16 +68,16 @@ app.post('/personagem', (req, res) => {
 
     // validar os dados e não permitir personagens duplicados pelo nome e id (não pode ser repetido)
     const item = lista.find(item => item.id == personagem.id || item.nome == personagem.nome);
-    
+
     if (item) {
-        res.status(409).send('Personagem já existe');
-        return;
+      res.status(409).send('Personagem já existe');
+      return;
     }
 
     // Checar se o personagem tem nome
     if (!personagem.nome) {
-        res.status(400).send('Nome é obrigatório');
-        return;
+      res.status(400).send('Nome é obrigatório');
+      return;
     }
 
     // Adicionar o novo personagem na lista
@@ -66,29 +85,29 @@ app.post('/personagem', (req, res) => {
 
     // Retornar o novo personagem e status code de created (201)
     res.status(201).send(' Personagem adicionado com sucesso: ' + personagem.nome);
-});
+  });
 
-// Endpoint Update [PUT] /personagem/:id
-app.put('/personagem/:id', (req, res) => {
+  // Endpoint Update [PUT] /personagem/:id
+  app.put('/personagem/:id', (req, res) => {
     // Acessar o id que foi passado na URL  
     const id = req.params.id;
 
     // Checar se o personagem tem nome
     if (!req.body.nome) {
-        res.status(400).send('Nome é obrigatório');
-        return;
+      res.status(400).send('Nome é obrigatório');
+      return;
     }
 
     // Checar se o personagem existe
     const itemExistente = lista.find(item => item.id == id);
     if (!itemExistente) {
-        res.status(404).send('Personagem não encontrado');
-        return;
+      res.status(404).send('Personagem não encontrado');
+      return;
     }
-    
+
     // Buscar o personagem na lista
-    const item = lista.find(function(item) {
-         return item.id == id; 
+    const item = lista.find(function (item) {
+      return item.id == id;
     });
 
     // Atualizar o personagem com os dados do body
@@ -96,23 +115,23 @@ app.put('/personagem/:id', (req, res) => {
 
     // Retornar o personagem atualizado
     res.send('Personagem atualizado com sucesso: ' + item.id + ' - ' + item.nome);
-});
+  });
 
-// Endpoint Delete [DELETE] /personagem/:id
-app.delete('/personagem/:id', (req, res) => {
+  // Endpoint Delete [DELETE] /personagem/:id
+  app.delete('/personagem/:id', (req, res) => {
     // Acessar o id que foi passado na URL  
     const id = req.params.id;
 
     // Checar se o personagem existe
     const itemExistente = lista.find(item => item.id == id);
     if (!itemExistente) {
-        res.status(404).send('Personagem não encontrado');
-        return;
+      res.status(404).send('Personagem não encontrado');
+      return;
     }
-    
+
     // Buscar o personagem na lista
-    const index = lista.findIndex(function(item) {
-         return item.id == id; 
+    const index = lista.findIndex(function (item) {
+      return item.id == id;
     });
 
     // Remover o personagem da lista
@@ -120,9 +139,14 @@ app.delete('/personagem/:id', (req, res) => {
 
     // Retornar o personagem removido
     res.send('Personagem removido com sucesso');
-});
+  });
 
 
-app.listen(port, () => {
+  app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
-});
+  });
+
+}
+
+// Iniciar a aplicação
+main();
