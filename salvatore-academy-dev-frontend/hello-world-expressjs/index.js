@@ -7,7 +7,7 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-// endpiint oi
+// endpoint oi
 app.get('/oi', (req, res) => {
     res.send('Oi!');
 });
